@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>DITZ NET — Voucher Management</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+
+<!-- SIDEBAR (Desktop) -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-mark"><i class="fa-solid fa-wifi"></i></div>
+    <div class="logo-text">
+      <span class="logo-main">DITZ</span>
+      <span class="logo-sub">NET</span>
+    </div>
+  </div>
+  <nav class="sidebar-nav">
+    <a class="nav-item active" data-page="dashboard" onclick="navigate('dashboard')">
+      <i class="fa-solid fa-chart-line"></i><span>Dashboard</span>
+    </a>
+    <a class="nav-item" data-page="vouchers" onclick="navigate('vouchers')">
+      <i class="fa-solid fa-ticket"></i><span>Voucher</span>
+    </a>
+    <a class="nav-item" data-page="profiles" onclick="navigate('profiles')">
+      <i class="fa-solid fa-layer-group"></i><span>Profil</span>
+    </a>
+    <a class="nav-item" data-page="categories" onclick="navigate('categories')">
+      <i class="fa-solid fa-tags"></i><span>Kategori</span>
+    </a>
+    <a class="nav-item" data-page="import" onclick="navigate('import')">
+      <i class="fa-solid fa-file-csv"></i><span>Import CSV</span>
+    </a>
+    <a class="nav-item" data-page="template" onclick="navigate('template')">
+      <i class="fa-solid fa-pen-ruler"></i><span>Template</span>
+    </a>
+    <a class="nav-item" data-page="print" onclick="navigate('print')">
+      <i class="fa-solid fa-print"></i><span>Cetak</span>
+    </a>
+    <a class="nav-item" data-page="backup" onclick="navigate('backup')">
+      <i class="fa-solid fa-database"></i><span>Backup</span>
+    </a>
+    <a class="nav-item" data-page="about" onclick="navigate('about')">
+      <i class="fa-solid fa-circle-info"></i><span>Tentang</span>
+    </a>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="sys-status"><span class="dot"></span> System Online</div>
+  </div>
+</aside>
+
+<!-- MAIN CONTENT -->
+<main class="main-content" id="mainContent">
+  <div class="topbar">
+    <div class="topbar-left">
+      <h1 class="page-title" id="pageTitle">Dashboard</h1>
+      <span class="page-subtitle" id="pageSubtitle">Ringkasan sistem voucher</span>
+    </div>
+    <div class="topbar-right">
+      <div class="datetime" id="datetimeClock"></div>
+    </div>
+  </div>
+
+  <!-- PAGES -->
+  <div id="page-dashboard" class="page active">
+    <!-- Stats Row -->
+    <div class="stats-grid">
+      <div class="stat-card" id="sc-total">
+        <div class="stat-icon"><i class="fa-solid fa-ticket"></i></div>
+        <div class="stat-info">
+          <div class="stat-value" id="stat-total">0</div>
+          <div class="stat-label">Total Voucher</div>
+        </div>
+        <div class="stat-glow"></div>
+      </div>
+      <div class="stat-card" id="sc-printed">
+        <div class="stat-icon"><i class="fa-solid fa-print"></i></div>
+        <div class="stat-info">
+          <div class="stat-value" id="stat-printed">0</div>
+          <div class="stat-label">Total Tercetak</div>
+        </div>
+        <div class="stat-glow"></div>
+      </div>
+      <div class="stat-card" id="sc-active">
+        <div class="stat-icon"><i class="fa-solid fa-circle-check"></i></div>
+        <div class="stat-info">
+          <div class="stat-value" id="stat-active">0</div>
+          <div class="stat-label">Voucher Aktif</div>
+        </div>
+        <div class="stat-glow"></div>
+      </div>
+      <div class="stat-card" id="sc-revenue">
+        <div class="stat-icon"><i class="fa-solid fa-coins"></i></div>
+        <div class="stat-info">
+          <div class="stat-value" id="stat-revenue">Rp 0</div>
+          <div class="stat-label">Total Nilai</div>
+        </div>
+        <div class="stat-glow"></div>
+      </div>
+    </div>
+
+    <!-- Category Breakdown -->
+    <div class="dash-row">
+      <div class="panel" style="flex:1.2">
+        <div class="panel-head">
+          <i class="fa-solid fa-chart-pie"></i> Distribusi Kategori
+        </div>
+        <div class="category-bars" id="categoryBars">
+          <div class="empty-state"><i class="fa-solid fa-inbox"></i><p>Belum ada data</p></div>
+        </div>
+      </div>
+      <div class="panel" style="flex:1">
+        <div class="panel-head">
+          <i class="fa-solid fa-crown"></i> Distribusi Jenis
+        </div>
+        <div class="type-pills" id="typePills">
+          <div class="empty-state"><i class="fa-solid fa-inbox"></i><p>Belum ada data</p></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Vouchers -->
+    <div class="panel">
+      <div class="panel-head">
+        <i class="fa-solid fa-clock-rotate-left"></i> Voucher Terbaru
+        <button class="btn-sm" onclick="navigate('vouchers')">Lihat Semua <i class="fa-solid fa-arrow-right"></i></button>
+      </div>
+      <div class="table-wrap">
+        <table class="data-table" id="recentTable">
+          <thead><tr><th>Username</th><th>Profil</th><th>Kategori</th><th>Jenis</th><th>Harga</th><th>Status</th></tr></thead>
+          <tbody id="recentBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- VOUCHER PAGE -->
+  <div id="page-vouchers" class="page">
+    <div class="toolbar">
+      <div class="search-box">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" id="voucherSearch" placeholder="Cari voucher..." oninput="filterVouchers()"/>
+      </div>
+      <div class="filter-group">
+        <select id="filterCategory" onchange="filterVouchers()"><option value="">Semua Kategori</option></select>
+        <select id="filterType" onchange="filterVouchers()"><option value="">Semua Jenis</option></select>
+        <select id="filterStatus" onchange="filterVouchers()">
+          <option value="">Semua Status</option>
+          <option value="active">Aktif</option>
+          <option value="printed">Tercetak</option>
+          <option value="used">Digunakan</option>
+        </select>
+      </div>
+      <button class="btn-primary" onclick="openModal('modalAddVoucher')"><i class="fa-solid fa-plus"></i> Tambah Voucher</button>
+    </div>
+    <div class="panel">
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead><tr><th><input type="checkbox" id="checkAll" onchange="toggleCheckAll()"/></th><th>Username</th><th>Password</th><th>Profil</th><th>Kategori</th><th>Jenis</th><th>Harga</th><th>Limit</th><th>Status</th><th>Aksi</th></tr></thead>
+          <tbody id="voucherBody"></tbody>
+        </table>
+      </div>
+      <div class="table-footer">
+        <span id="voucherCount">0 voucher</span>
+        <div class="bulk-actions" id="bulkActions" style="display:none">
+          <button class="btn-danger-sm" onclick="bulkDelete()"><i class="fa-solid fa-trash"></i> Hapus Terpilih</button>
+          <button class="btn-sm" onclick="bulkPrint()"><i class="fa-solid fa-print"></i> Cetak Terpilih</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROFILES PAGE -->
+  <div id="page-profiles" class="page">
+    <div class="toolbar">
+      <h3 style="color:var(--accent-cyan)">Manajemen Profil Voucher</h3>
+      <button class="btn-primary" onclick="openModal('modalAddProfile')"><i class="fa-solid fa-plus"></i> Tambah Profil</button>
+    </div>
+    <div class="card-grid" id="profileGrid"></div>
+  </div>
+
+  <!-- CATEGORIES PAGE -->
+  <div id="page-categories" class="page">
+    <div class="toolbar">
+      <h3 style="color:var(--accent-purple)">Manajemen Kategori</h3>
+      <button class="btn-primary" onclick="openModal('modalAddCategory')"><i class="fa-solid fa-plus"></i> Tambah Kategori</button>
+    </div>
+    <div class="card-grid" id="categoryGrid"></div>
+  </div>
+
+  <!-- IMPORT CSV PAGE -->
+  <div id="page-import" class="page">
+    <div class="panel">
+      <div class="panel-head"><i class="fa-solid fa-file-csv"></i> Import Voucher dari CSV (Format Mikhmon)</div>
+      <div class="import-zone" id="importZone">
+        <input type="file" id="csvFile" accept=".csv" style="display:none" onchange="handleCSV(event)"/>
+        <div class="import-icon"><i class="fa-solid fa-cloud-arrow-up"></i></div>
+        <p class="import-title">Seret & Lepas file CSV di sini</p>
+        <p class="import-sub">atau</p>
+        <button class="btn-primary" onclick="document.getElementById('csvFile').click()"><i class="fa-solid fa-folder-open"></i> Pilih File</button>
+        <p class="import-hint">Format: CSV dari sistem Mikhmon (username, password, profile, comment, dll)</p>
+      </div>
+    </div>
+    <div class="panel" id="csvPreviewPanel" style="display:none">
+      <div class="panel-head"><i class="fa-solid fa-eye"></i> Preview Data CSV</div>
+      <div class="table-wrap">
+        <table class="data-table"><thead id="csvHead"></thead><tbody id="csvBody"></tbody></table>
+      </div>
+      <div style="margin-top:1rem;display:flex;gap:1rem">
+        <button class="btn-primary" onclick="importCSVData()"><i class="fa-solid fa-database"></i> Import ke Sistem</button>
+        <button class="btn-ghost" onclick="cancelCSV()"><i class="fa-solid fa-xmark"></i> Batal</button>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><i class="fa-solid fa-circle-info"></i> Format CSV Mikhmon</div>
+      <div class="info-box">
+        <p>Kolom yang dikenali dari format Mikhmon:</p>
+        <div class="var-grid">
+          <span class="var-tag">username</span><span class="var-tag">password</span><span class="var-tag">profile</span>
+          <span class="var-tag">comment</span><span class="var-tag">time-limit</span><span class="var-tag">uptime-limit</span>
+          <span class="var-tag">bytes-out</span><span class="var-tag">bytes-in</span><span class="var-tag">limit-uptime</span>
+          <span class="var-tag">shared-users</span><span class="var-tag">server</span><span class="var-tag">local-address</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TEMPLATE PAGE -->
+  <div id="page-template" class="page">
+    <div class="panel">
+      <div class="panel-head"><i class="fa-solid fa-pen-ruler"></i> Pengaturan Template Cetak</div>
+      <div class="template-tabs">
+        <button class="tab-btn active" onclick="switchTemplateTab('code')" id="tabCodeBtn"><i class="fa-solid fa-code"></i> Mode Kode HTML</button>
+        <button class="tab-btn" onclick="switchTemplateTab('img')" id="tabImgBtn"><i class="fa-solid fa-image"></i> Mode Gambar</button>
+      </div>
+
+      <!-- CODE MODE -->
+      <div id="templateCodeMode">
+        <div class="template-vars">
+          <p style="color:var(--text-muted);margin-bottom:.5rem;font-size:.8rem">Variabel yang tersedia:</p>
+          <div class="var-grid">
+            <span class="var-tag" onclick="insertVar('{username}')">{username}</span>
+            <span class="var-tag" onclick="insertVar('{password}')">{password}</span>
+            <span class="var-tag" onclick="insertVar('{profile}')">{profile}</span>
+            <span class="var-tag" onclick="insertVar('{comment}')">{comment}</span>
+            <span class="var-tag" onclick="insertVar('{time-limit}')">{time-limit}</span>
+            <span class="var-tag" onclick="insertVar('{uptime-limit}')">{uptime-limit}</span>
+            <span class="var-tag" onclick="insertVar('{price}')">{price}</span>
+            <span class="var-tag" onclick="insertVar('{category}')">{category}</span>
+            <span class="var-tag" onclick="insertVar('{type}')">{type}</span>
+            <span class="var-tag" onclick="insertVar('{server}')">{server}</span>
+            <span class="var-tag" onclick="insertVar('{date}')">{date}</span>
+            <span class="var-tag" onclick="insertVar('{ssid}')">{ssid}</span>
+          </div>
+        </div>
+        <div class="paper-size-row">
+          <label>Ukuran Kertas:</label>
+          <select id="paperSize" onchange="updatePaperSize()">
+            <option value="A4">A4 (210 x 297 mm)</option>
+            <option value="A5">A5 (148 x 210 mm)</option>
+            <option value="A6">A6 (105 x 148 mm)</option>
+            <option value="custom">Custom</option>
+          </select>
+          <div id="customSize" style="display:none;gap:.5rem;display:none">
+            <input type="number" id="customW" placeholder="Lebar (mm)" style="width:110px" class="input-field"/>
+            <input type="number" id="customH" placeholder="Tinggi (mm)" style="width:110px" class="input-field"/>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+          <div>
+            <label class="field-label">Jumlah Kolom per Baris</label>
+            <input type="number" id="voucherCols" class="input-field" value="2" min="1" max="6"/>
+          </div>
+          <div>
+            <label class="field-label">Nama SSID / Hotspot</label>
+            <input type="text" id="ssidName" class="input-field" placeholder="DITZ NET Hotspot"/>
+          </div>
+        </div>
+        <textarea class="code-editor" id="templateCode" spellcheck="false"></textarea>
+        <div class="template-actions">
+          <button class="btn-primary" onclick="saveTemplate()"><i class="fa-solid fa-floppy-disk"></i> Simpan Template</button>
+          <button class="btn-ghost" onclick="resetTemplate()"><i class="fa-solid fa-rotate-left"></i> Reset Default</button>
+          <button class="btn-secondary" onclick="previewTemplate()"><i class="fa-solid fa-eye"></i> Preview</button>
+        </div>
+      </div>
+
+      <!-- IMAGE MODE -->
+      <div id="templateImgMode" style="display:none">
+        <div class="enter-editor-wrap">
+          <div class="enter-editor-card">
+            <div class="ee-icon"><i class="fa-solid fa-pen-ruler"></i></div>
+            <div class="ee-info">
+              <h3>Template Editor</h3>
+              <p>Editor penuh dengan fitur drag, resize, rotate, ubah font, warna, shapes, layer order, dan lainnya — seperti Canva</p>
+              <div class="ee-features">
+                <span><i class="fa-solid fa-up-down-left-right"></i> Drag & Drop</span>
+                <span><i class="fa-solid fa-expand"></i> Resize</span>
+                <span><i class="fa-solid fa-rotate"></i> Rotate</span>
+                <span><i class="fa-solid fa-font"></i> Typography</span>
+                <span><i class="fa-solid fa-palette"></i> Warna</span>
+                <span><i class="fa-solid fa-shapes"></i> Shapes</span>
+                <span><i class="fa-solid fa-layer-group"></i> Layer</span>
+                <span><i class="fa-solid fa-rotate-left"></i> Undo/Redo</span>
+              </div>
+            </div>
+            <button class="btn-enter-editor" onclick="window.location.href='editor.html'">
+              <i class="fa-solid fa-arrow-right-to-bracket"></i>
+              Masuk ke Editor
+            </button>
+          </div>
+          <div id="imgTemplateSaved" style="display:none" class="panel" style="margin-top:1rem">
+            <div class="panel-head"><i class="fa-solid fa-circle-check" style="color:var(--accent-green)"></i> Template Gambar Tersimpan</div>
+            <p style="font-size:.84rem;color:var(--text-muted)">Klik "Masuk ke Editor" untuk mengedit ulang template yang sudah ada.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PRINT PAGE -->
+  <div id="page-print" class="page">
+    <div class="toolbar">
+      <h3 style="color:var(--accent-green)">Cetak Voucher</h3>
+      <div style="display:flex;gap:.75rem">
+        <button class="btn-secondary" onclick="exportPDF()"><i class="fa-solid fa-file-pdf"></i> Export PDF</button>
+        <button class="btn-primary" onclick="printVouchers()"><i class="fa-solid fa-print"></i> Print Langsung</button>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><i class="fa-solid fa-filter"></i> Filter Voucher yang Dicetak</div>
+      <div class="filter-row">
+        <select id="printFilterCat" onchange="updatePrintPreview()"><option value="">Semua Kategori</option></select>
+        <select id="printFilterType" onchange="updatePrintPreview()"><option value="">Semua Jenis</option></select>
+        <select id="printFilterStatus" onchange="updatePrintPreview()">
+          <option value="active">Belum Dicetak</option>
+          <option value="">Semua</option>
+        </select>
+        <label style="color:var(--text-muted);font-size:.85rem;display:flex;align-items:center;gap:.5rem">
+          <input type="checkbox" id="markPrinted" checked/> Tandai sebagai tercetak setelah print
+        </label>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><i class="fa-solid fa-eye"></i> Preview Cetak</div>
+      <div class="print-preview-area" id="printPreviewArea"></div>
+    </div>
+  </div>
+
+  <!-- BACKUP PAGE -->
+  <div id="page-backup" class="page">
+    <div class="panel">
+      <div class="panel-head"><i class="fa-solid fa-database"></i> Backup & Restore Data</div>
+      <div class="backup-grid">
+        <div class="backup-card">
+          <div class="backup-icon" style="color:var(--accent-cyan)"><i class="fa-solid fa-download"></i></div>
+          <h3>Export Backup</h3>
+          <p>Unduh seluruh data sistem dalam format JSON untuk backup lokal</p>
+          <button class="btn-primary" onclick="exportBackup()"><i class="fa-solid fa-file-export"></i> Export JSON</button>
+        </div>
+        <div class="backup-card">
+          <div class="backup-icon" style="color:var(--accent-green)"><i class="fa-solid fa-upload"></i></div>
+          <h3>Restore Backup</h3>
+          <p>Pulihkan data dari file backup JSON yang telah disimpan sebelumnya</p>
+          <input type="file" id="restoreFile" accept=".json" style="display:none" onchange="importBackup(event)"/>
+          <button class="btn-secondary" onclick="document.getElementById('restoreFile').click()"><i class="fa-solid fa-file-import"></i> Pilih File JSON</button>
+        </div>
+        <div class="backup-card">
+          <div class="backup-icon" style="color:var(--accent-orange)"><i class="fa-solid fa-trash-can"></i></div>
+          <h3>Reset Data</h3>
+          <p>Hapus semua data dari sistem. Pastikan sudah backup sebelumnya</p>
+          <button class="btn-danger" onclick="confirmReset()"><i class="fa-solid fa-triangle-exclamation"></i> Reset Semua</button>
+        </div>
+      </div>
+      <div class="panel-head" style="margin-top:2rem"><i class="fa-solid fa-clock-rotate-left"></i> Riwayat Backup Otomatis</div>
+      <div id="backupHistory"><div class="empty-state"><i class="fa-solid fa-inbox"></i><p>Belum ada riwayat backup</p></div></div>
+    </div>
+  </div>
+
+  <!-- ABOUT PAGE -->
+  <div id="page-about" class="page">
+    <div class="about-hero">
+      <div class="about-logo-big">
+        <i class="fa-solid fa-wifi"></i>
+      </div>
+      <h1 class="about-title">DITZ NET</h1>
+      <p class="about-tagline">Voucher WiFi Management System</p>
+    </div>
+    <div class="about-grid">
+      <div class="panel">
+        <div class="panel-head"><i class="fa-solid fa-circle-info"></i> Tentang Aplikasi</div>
+        <div class="about-content">
+          <p>DITZ NET adalah sistem manajemen voucher WiFi berbasis web yang ringan dan efisien. Dirancang untuk memudahkan pengelolaan, monitoring, dan pencetakan voucher hotspot secara lokal tanpa ketergantungan pada server eksternal.</p>
+          <p>Semua data tersimpan secara lokal menggunakan Local Storage sehingga cepat, aman, dan dapat diakses kapan saja tanpa koneksi internet.</p>
+          <div class="feature-list">
+            <div class="feature-item"><i class="fa-solid fa-check" style="color:var(--accent-green)"></i> Monitoring voucher real-time</div>
+            <div class="feature-item"><i class="fa-solid fa-check" style="color:var(--accent-green)"></i> Import CSV format Mikhmon</div>
+            <div class="feature-item"><i class="fa-solid fa-check" style="color:var(--accent-green)"></i> Template cetak kustom</div>
+            <div class="feature-item"><i class="fa-solid fa-check" style="color:var(--accent-green)"></i> Export PDF & Print langsung</div>
+            <div class="feature-item"><i class="fa-solid fa-check" style="color:var(--accent-green)"></i> Backup & Restore JSON</div>
+            <div class="feature-item"><i class="fa-solid fa-check" style="color:var(--accent-green)"></i> Responsive — Desktop & Mobile</div>
+          </div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><i class="fa-solid fa-code"></i> Developer</div>
+        <div class="dev-card">
+          <div class="dev-avatar"><i class="fa-solid fa-user-tie"></i></div>
+          <div class="dev-info">
+            <h3>DITZ NET TECHNOLOGY</h3>
+            <p>System Developer & Network Solutions</p>
+            <div class="dev-tags">
+              <span class="dev-tag">WiFi Management</span>
+              <span class="dev-tag">Hotspot Solutions</span>
+              <span class="dev-tag">Network Tech</span>
+            </div>
+          </div>
+        </div>
+        <div style="margin-top:1.5rem">
+          <div class="info-row"><i class="fa-solid fa-code-branch"></i><span>Versi 1.0.0</span></div>
+          <div class="info-row"><i class="fa-solid fa-database"></i><span>Storage: Browser Local Storage</span></div>
+          <div class="info-row"><i class="fa-solid fa-shield-halved"></i><span>Offline-first, data lokal</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- BOTTOM NAV (Mobile) -->
+<nav class="bottom-nav" id="bottomNav">
+  <a class="bnav-item active" data-page="dashboard" onclick="navigate('dashboard')"><i class="fa-solid fa-chart-line"></i><span>Dashboard</span></a>
+  <a class="bnav-item" data-page="vouchers" onclick="navigate('vouchers')"><i class="fa-solid fa-ticket"></i><span>Voucher</span></a>
+  <a class="bnav-item" data-page="import" onclick="navigate('import')"><i class="fa-solid fa-file-csv"></i><span>Import</span></a>
+  <a class="bnav-item" data-page="print" onclick="navigate('print')"><i class="fa-solid fa-print"></i><span>Cetak</span></a>
+  <a class="bnav-item" data-page="more" onclick="toggleMobileMenu()"><i class="fa-solid fa-ellipsis"></i><span>Lainnya</span></a>
+</nav>
+
+<!-- Mobile More Menu -->
+<div class="mobile-more-menu" id="mobileMoreMenu" style="display:none">
+  <div class="mmenu-backdrop" onclick="toggleMobileMenu()"></div>
+  <div class="mmenu-sheet">
+    <div class="mmenu-handle"></div>
+    <div class="mmenu-label">Menu Lainnya</div>
+    <div class="mmenu-grid">
+      <a class="mmenu-item" onclick="navigate('profiles');toggleMobileMenu()">
+        <div class="mmenu-item-icon"><i class="fa-solid fa-layer-group"></i></div>
+        <span>Profil</span>
+      </a>
+      <a class="mmenu-item" onclick="navigate('categories');toggleMobileMenu()">
+        <div class="mmenu-item-icon"><i class="fa-solid fa-tags"></i></div>
+        <span>Kategori</span>
+      </a>
+      <a class="mmenu-item" onclick="navigate('template');toggleMobileMenu()">
+        <div class="mmenu-item-icon"><i class="fa-solid fa-pen-ruler"></i></div>
+        <span>Template</span>
+      </a>
+      <a class="mmenu-item" onclick="navigate('backup');toggleMobileMenu()">
+        <div class="mmenu-item-icon"><i class="fa-solid fa-database"></i></div>
+        <span>Backup</span>
+      </a>
+      <a class="mmenu-item" onclick="navigate('about');toggleMobileMenu()">
+        <div class="mmenu-item-icon"><i class="fa-solid fa-circle-info"></i></div>
+        <span>Tentang</span>
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- MODALS -->
+<!-- Add Voucher -->
+<div class="modal-overlay" id="modalAddVoucher" style="display:none">
+  <div class="modal">
+    <div class="modal-head"><i class="fa-solid fa-ticket"></i> Tambah Voucher<button class="modal-close" onclick="closeModal('modalAddVoucher')"><i class="fa-solid fa-xmark"></i></button></div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group"><label class="field-label">Username *</label><input id="v_username" class="input-field" placeholder="user001"/></div>
+        <div class="form-group"><label class="field-label">Password *</label><input id="v_password" class="input-field" placeholder="pass001"/></div>
+        <div class="form-group"><label class="field-label">Profil *</label><select id="v_profile" class="input-field"><option value="">-- Pilih Profil --</option></select></div>
+        <div class="form-group"><label class="field-label">Kategori *</label><select id="v_category" class="input-field"><option value="">-- Pilih Kategori --</option></select></div>
+        <div class="form-group"><label class="field-label">Jenis *</label><select id="v_type" class="input-field"><option value="">-- Pilih Jenis --</option></select></div>
+        <div class="form-group"><label class="field-label">Harga (Rp)</label><input id="v_price" type="number" class="input-field" placeholder="5000"/></div>
+        <div class="form-group"><label class="field-label">Time Limit</label><input id="v_timelimit" class="input-field" placeholder="1h / 1d / 30m"/></div>
+        <div class="form-group"><label class="field-label">Uptime Limit</label><input id="v_uptimelimit" class="input-field" placeholder="1h / unlimited"/></div>
+        <div class="form-group"><label class="field-label">Shared Users</label><input id="v_shared" type="number" class="input-field" value="1" min="1"/></div>
+        <div class="form-group"><label class="field-label">Server</label><input id="v_server" class="input-field" placeholder="hotspot1"/></div>
+        <div class="form-group full"><label class="field-label">Komentar</label><input id="v_comment" class="input-field" placeholder="Keterangan tambahan"/></div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-ghost" onclick="closeModal('modalAddVoucher')">Batal</button>
+      <button class="btn-primary" onclick="saveVoucher()"><i class="fa-solid fa-floppy-disk"></i> Simpan</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Profile -->
+<div class="modal-overlay" id="modalAddProfile" style="display:none">
+  <div class="modal">
+    <div class="modal-head"><i class="fa-solid fa-layer-group"></i> Tambah Profil<button class="modal-close" onclick="closeModal('modalAddProfile')"><i class="fa-solid fa-xmark"></i></button></div>
+    <div class="modal-body">
+      <div class="form-group"><label class="field-label">Nama Profil *</label><input id="p_name" class="input-field" placeholder="1Mbps-1Jam"/></div>
+      <div class="form-group"><label class="field-label">Deskripsi</label><input id="p_desc" class="input-field" placeholder="Keterangan singkat profil ini"/></div>
+      <div class="form-grid">
+        <div class="form-group"><label class="field-label">Rate Upload</label><input id="p_upload" class="input-field" placeholder="1M"/></div>
+        <div class="form-group"><label class="field-label">Rate Download</label><input id="p_download" class="input-field" placeholder="2M"/></div>
+        <div class="form-group"><label class="field-label">Durasi (Time Limit)</label><input id="p_timelimit" class="input-field" placeholder="1h / 1d / 30m"/></div>
+        <div class="form-group"><label class="field-label">Uptime Limit</label><input id="p_uptimelimit" class="input-field" placeholder="1h / unlimited"/></div>
+      </div>
+      <div class="form-group"><label class="field-label">Harga Default (Rp)</label><input id="p_price" type="number" class="input-field" placeholder="5000"/></div>
+      <div class="form-group"><label class="field-label">Shared Users</label><input id="p_shared" type="number" class="input-field" placeholder="1" value="1" min="1"/></div>
+      <div class="form-group"><label class="field-label">Warna Label</label><input type="color" id="p_color" value="#00f5ff" class="input-color"/></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-ghost" onclick="closeModal('modalAddProfile')">Batal</button>
+      <button class="btn-primary" onclick="saveProfile()"><i class="fa-solid fa-floppy-disk"></i> Simpan</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Category -->
+<div class="modal-overlay" id="modalAddCategory" style="display:none">
+  <div class="modal">
+    <div class="modal-head"><i class="fa-solid fa-tags"></i> Tambah Kategori<button class="modal-close" onclick="closeModal('modalAddCategory')"><i class="fa-solid fa-xmark"></i></button></div>
+    <div class="modal-body">
+      <div class="form-group"><label class="field-label">Nama Kategori *</label><input id="c_name" class="input-field" placeholder="Reguler / VIP / VVIP"/></div>
+      <div class="form-group"><label class="field-label">Deskripsi</label><input id="c_desc" class="input-field" placeholder="Keterangan kategori"/></div>
+      <div class="form-group"><label class="field-label">Icon (Font Awesome class)</label><input id="c_icon" class="input-field" placeholder="fa-star / fa-crown / fa-gem"/></div>
+      <div class="form-group"><label class="field-label">Warna</label><input type="color" id="c_color" value="#a855f7" class="input-color"/></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-ghost" onclick="closeModal('modalAddCategory')">Batal</button>
+      <button class="btn-primary" onclick="saveCategory()"><i class="fa-solid fa-floppy-disk"></i> Simpan</button>
+    </div>
+  </div>
+</div>
+
+<!-- Template Preview -->
+<div class="modal-overlay" id="modalTemplatePreview" style="display:none">
+  <div class="modal modal-lg">
+    <div class="modal-head"><i class="fa-solid fa-eye"></i> Preview Template<button class="modal-close" onclick="closeModal('modalTemplatePreview')"><i class="fa-solid fa-xmark"></i></button></div>
+    <div class="modal-body" id="templatePreviewContent" style="background:#fff;border-radius:8px;min-height:200px"></div>
+    <div class="modal-foot"><button class="btn-ghost" onclick="closeModal('modalTemplatePreview')">Tutup</button></div>
+  </div>
+</div>
+
+<!-- Notification Toast -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- Edit Voucher Modal -->
+<div class="modal-overlay" id="modalEditVoucher" style="display:none">
+  <div class="modal">
+    <div class="modal-head"><i class="fa-solid fa-pen"></i> Edit Voucher<button class="modal-close" onclick="closeModal('modalEditVoucher')"><i class="fa-solid fa-xmark"></i></button></div>
+    <div class="modal-body">
+      <input type="hidden" id="ev_id"/>
+      <div class="form-grid">
+        <div class="form-group"><label class="field-label">Username</label><input id="ev_username" class="input-field"/></div>
+        <div class="form-group"><label class="field-label">Password</label><input id="ev_password" class="input-field"/></div>
+        <div class="form-group"><label class="field-label">Profil</label><select id="ev_profile" class="input-field"></select></div>
+        <div class="form-group"><label class="field-label">Kategori</label><select id="ev_category" class="input-field"></select></div>
+        <div class="form-group"><label class="field-label">Jenis</label><select id="ev_type" class="input-field"></select></div>
+        <div class="form-group"><label class="field-label">Harga (Rp)</label><input id="ev_price" type="number" class="input-field"/></div>
+        <div class="form-group"><label class="field-label">Time Limit</label><input id="ev_timelimit" class="input-field"/></div>
+        <div class="form-group"><label class="field-label">Uptime Limit</label><input id="ev_uptimelimit" class="input-field"/></div>
+        <div class="form-group"><label class="field-label">Shared Users</label><input id="ev_shared" type="number" class="input-field" value="1"/></div>
+        <div class="form-group"><label class="field-label">Server</label><input id="ev_server" class="input-field"/></div>
+        <div class="form-group full"><label class="field-label">Komentar</label><input id="ev_comment" class="input-field"/></div>
+        <div class="form-group full"><label class="field-label">Status</label>
+          <select id="ev_status" class="input-field">
+            <option value="active">Aktif</option>
+            <option value="printed">Tercetak</option>
+            <option value="used">Digunakan</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-ghost" onclick="closeModal('modalEditVoucher')">Batal</button>
+      <button class="btn-primary" onclick="updateVoucher()"><i class="fa-solid fa-floppy-disk"></i> Update</button>
+    </div>
+  </div>
+</div>
+
+<script src="js/app.js"></script>
+</body>
+</html>
